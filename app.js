@@ -24,7 +24,7 @@ const limiter = rateLimit({
   max: 50,
 });
 
-const { PORT = 3000, NODE_ENV } = process.env;
+const { PORT = 3000, MODIFIER } = process.env;
 
 const app = express();
 
@@ -43,7 +43,7 @@ app.use(cookieParser());
 
 app.use(helmet.contentSecurityPolicy(helmetCSPOptions));
 
-if (NODE_ENV === 'study') {
+if (MODIFIER === 'study') {
   app.get('/crash-test', () => {
     setTimeout(() => {
       throw new Error('Сервер сейчас упадёт');
