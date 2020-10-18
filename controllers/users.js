@@ -1,7 +1,12 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const { jwtSecret } = require('../utils/options');
+const {
+  jwtSecret,
+  SALT_LENGTH,
+  jwtCookieOptions,
+  jwtOptions,
+} = require('../utils/options');
 
 const { enableErrorHandling } = require('../utils/error-handling');
 const {
@@ -9,12 +14,23 @@ const {
   WRONG_EMAIL_OR_PASSWORD,
   NO_SUCH_USER_ID,
   USER_EXISTS,
+  FORBIDDEN,
 } = require('../utils/errors');
 
 const User = require('../models/user');
+const { cleanCreated } = require('../utils/utils');
 
 const getUsers = (req, res) => {
   return User.find({}).then((users) => res.send(users));
+};
+
+const getUser = (req, res) => {
+  return User.findById(req.user._id).then((user) => {
+    if (!user) {
+      throw new Err(NO_SUCH_USER_ID);
+    }
+    res.send(user);
+  });
 };
 
 const getUserById = (req, res) => {
@@ -36,12 +52,10 @@ const createUser = (req, res) => {
     })
     .then(() =>
       bcrypt
-        .hash(password, 10)
+        .hash(password, SALT_LENGTH)
         .then((hash) => User.create({ email, password: hash }))
         .then((user) => {
-          const cleanedUser = { ...user._doc };
-          delete cleanedUser.__v;
-          res.status(201).send(cleanedUser);
+          res.status(201).send(cleanCreated(user, '__v', 'password'));
         }),
     );
 };
@@ -77,26 +91,34 @@ const login = (req, res) => {
           throw new Err(WRONG_EMAIL_OR_PASSWORD);
         }
 
-        const token = jwt.sign({ _id: user._id }, jwtSecret, {
-          expiresIn: '7d',
-        });
+        const token = jwt.sign({ _id: user._id }, jwtSecret, jwtOptions);
         res
-          .cookie('jwt', token, {
-            maxAge: 3600000 * 24 * 7,
-            httpOnly: true,
-            sameSite: true,
-          })
-          .end();
-        throw new Error(jwtSecret);
+          .cookie('jwt', token, jwtCookieOptions)
+          .send({ message: 'Вы успешно авторизовались' });
       });
     });
 };
 
+const logout = (req, res) => {
+  const { _id } = req.body;
+  if (_id !== req.user._id) {
+    throw new Err(FORBIDDEN);
+  }
+  return User.findById(_id).then((user) => {
+    if (!user) {
+      throw new Err(NO_SUCH_USER_ID);
+    }
+    res.clearCookie('jwt').send({ message: 'Вы успешно вышли' });
+  });
+};
+
 module.exports = enableErrorHandling({
   getUsers,
+  getUser,
   getUserById,
   createUser,
   updateUserInfo,
   updateUserAvatar,
   login,
+  logout,
 });

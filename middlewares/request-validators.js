@@ -1,19 +1,5 @@
-const { Joi } = require('celebrate');
-
-function isUrl(string) {
-  const regExp = /^https?:\/\/(www\.)?([\w-]{1,}\.){1,}[a-z]{1,}(\/.*)*$/i;
-  return regExp.test(string);
-}
-
-function isPassword(string) {
-  const regExp = /^[\w!@#$%^&*()\-+=;:,./?\\|`~[\]{}<>"']*$/i;
-  return regExp.test(string);
-}
-
-function isName(string) {
-  const regExp = /^[a-zА-яё\s-]{1,}$/i;
-  return regExp.test(string);
-}
+const { celebrate, Joi } = require('celebrate');
+const { isUrl, isName, isPassword } = require('../utils/validators');
 
 function decorateForJoi(func, message) {
   return (value, helpers) => {
@@ -67,6 +53,12 @@ const signup = {
   }),
 };
 
+const logout = {
+  body: Joi.object().keys({
+    _id: Joi.string().alphanum().length(24),
+  }),
+};
+
 const signin = signup;
 
 const json = {
@@ -78,13 +70,12 @@ const json = {
 };
 
 module.exports = {
-  isUrl,
-  isName,
-  avatar,
-  info,
-  id,
-  card,
-  signup,
-  signin,
-  json,
+  avatarValidator: celebrate(avatar),
+  infoValidator: celebrate(info),
+  idValidator: celebrate(id),
+  cardValidator: celebrate(card),
+  signupValidator: celebrate(signup),
+  signinValidator: celebrate(signin),
+  jsonValidator: celebrate(json),
+  logoutValidator: celebrate(logout),
 };

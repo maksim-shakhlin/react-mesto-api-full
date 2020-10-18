@@ -1,6 +1,7 @@
 const { enableErrorHandling } = require('../utils/error-handling');
 const { Err, FORBIDDEN, NO_SUCH_CARD_ID } = require('../utils/errors');
 const Card = require('../models/card');
+const { cleanCreated } = require('../utils/utils');
 
 const getCards = (req, res) => {
   return Card.find({}).then((cards) => res.send(cards));
@@ -18,15 +19,13 @@ const deleteCard = (req, res) => {
       }
       return Card.findByIdAndDelete(req.params.id);
     })
-    .then(() => res.status(204).send());
+    .then(() => res.status(204).end());
 };
 
 const createCard = (req, res) => {
   const { name, link } = req.body;
   return Card.create({ name, link, owner: req.user._id }).then((card) => {
-    const cleanedCard = { ...card._doc };
-    delete cleanedCard.__v;
-    res.status(201).send(cleanedCard);
+    res.status(201).send(cleanCreated(card, '__v'));
   });
 };
 

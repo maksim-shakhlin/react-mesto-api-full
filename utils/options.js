@@ -1,23 +1,18 @@
 require('dotenv').config();
-const { cleanSpaces } = require('./utils');
+const { cleaner } = require('./utils');
 
 const { JWT_SECRET, NODE_ENV } = process.env;
-
-const fieldsToClean = ['name', 'about', 'link', 'avatar', 'email'];
 
 module.exports.jwtSecret =
   (NODE_ENV === 'production' && JWT_SECRET) || 'dev-jwt-secret';
 
+const fieldsToClean = ['name', 'about', 'link', 'avatar', 'email'];
+
 module.exports.bodyParserOptions = {
-  reviver: (key, value) => {
-    if (fieldsToClean.includes(key)) {
-      return cleanSpaces(value);
-    }
-    return value;
-  },
+  reviver: cleaner(fieldsToClean),
 };
 
-module.exports.helmetCSPOptions = {
+module.exports.helmetOptions = {
   directives: {
     'default-src': ["'self'"],
     'script-src': ["'self'"],
@@ -25,4 +20,30 @@ module.exports.helmetCSPOptions = {
     'style-src': ["'self'"],
     'object-src': ["'none'"],
   },
+};
+
+module.exports.mongoUri = 'mongodb://localhost:27017/mestodb';
+
+module.exports.mongooseOptions = {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
+  useUnifiedTopology: true,
+};
+
+module.exports.limiterOptions = {
+  windowMs: 5 * 60 * 1000,
+  max: 50,
+};
+
+module.exports.SALT_LENGTH = 10;
+
+module.exports.jwtCookieOptions = {
+  maxAge: 3600000 * 24 * 7,
+  httpOnly: true,
+  sameSite: true,
+};
+
+module.exports.jwtOptions = {
+  expiresIn: '7d',
 };

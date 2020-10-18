@@ -5,11 +5,6 @@ class Err extends Error {
   }
 }
 
-const USER_EXISTS = {
-  message: 'Пользователь с таким email уже существует',
-  statusCode: 400,
-};
-
 const WRONG_EMAIL_OR_PASSWORD = {
   message: 'Неправильный логин или пароль',
   statusCode: 401,
@@ -32,6 +27,11 @@ const NO_SUCH_USER_ID = {
 const NO_SUCH_CARD_ID = {
   message: 'Карточка с таким id не найдена',
   statusCode: 404,
+};
+
+const USER_EXISTS = {
+  message: 'Пользователь с таким email уже существует',
+  statusCode: 409,
 };
 
 module.exports = {

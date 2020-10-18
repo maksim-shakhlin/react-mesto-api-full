@@ -3,12 +3,13 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const { celebrate, errors: celErrors } = require('celebrate');
+const { errors: celebrateErrors } = require('celebrate');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const cors = require('cors');
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const { login, createUser } = require('./controllers/users');
+const { login, createUser, logout } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const errors = require('./middlewares/errors');
 
@@ -16,32 +17,45 @@ const users = require('./routes/users');
 const cards = require('./routes/cards');
 const notFound = require('./routes/notFound');
 
-const { bodyParserOptions, helmetCSPOptions } = require('./utils/options');
-const { signup, signin, json } = require('./utils/validation');
+const {
+  bodyParserOptions,
+  helmetOptions,
+  mongoUri,
+  mongooseOptions,
+  limiterOptions,
+} = require('./utils/options');
+const {
+  signupValidator,
+  signinValidator,
+  jsonValidator,
+  logoutValidator,
+} = require('./middlewares/request-validators');
 
-const limiter = rateLimit({
-  windowMs: 5 * 60 * 1000,
-  max: 50,
-});
+const limiter = rateLimit(limiterOptions);
 
-const { PORT = 3000, MODIFIER } = process.env;
+const { PORT = 3000, MODIFIER, NODE_ENV } = process.env;
 
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-  useUnifiedTopology: true,
-});
+mongoose.connect(mongoUri, mongooseOptions);
+if (NODE_ENV !== 'production') {
+  app.use(
+    cors({
+      origin: 'http://localhost:3001',
+      credentials: true,
+    }),
+  );
+}
 
 app.use(requestLogger);
 app.use(limiter);
 
+app.use(jsonValidator);
+
 app.use(bodyParser.json(bodyParserOptions));
 app.use(cookieParser());
 
-app.use(helmet.contentSecurityPolicy(helmetCSPOptions));
+app.use(helmet.contentSecurityPolicy(helmetOptions));
 
 if (MODIFIER === 'study') {
   app.get('/crash-test', () => {
@@ -51,19 +65,18 @@ if (MODIFIER === 'study') {
   });
 }
 
-app.use(celebrate(json));
-app.post('/signin', celebrate(signin), login);
-app.post('/signup', celebrate(signup), createUser);
+app.post('/signin', signinValidator, login);
+app.post('/signup', signupValidator, createUser);
 
-app.use(auth);
+app.use('/users', auth, users);
+app.use('/cards', auth, cards);
+app.post('/logout', auth, logoutValidator, logout);
 
-app.use('/users', users);
-app.use('/cards', cards);
 app.use('*', notFound);
 
 app.use(errorLogger);
 
-app.use(celErrors());
+app.use(celebrateErrors());
 app.use(errors);
 
 app.listen(PORT);
