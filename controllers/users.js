@@ -64,7 +64,12 @@ const updateUser = (res, id, data) => {
   return User.findByIdAndUpdate(id, data, {
     new: true,
     runValidators: true,
-  }).then((user) => res.send(user));
+  }).then((user) => {
+    if (!user) {
+      throw new Err(NO_SUCH_USER_ID);
+    }
+    res.send(user);
+  });
 };
 
 const updateUserInfo = (req, res) => {

@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/user');
 const { Err, UNAUTHORIZED } = require('../utils/errors');
 
 const { jwtSecret } = require('../utils/options');
@@ -17,7 +18,16 @@ module.exports = (req, res, next) => {
     next(new Err(UNAUTHORIZED));
   }
 
-  req.user = payload;
-
-  next();
+  // in case we have deleted user but he still has cookie
+  User.findById(payload)
+    .then((user) => {
+      if (!user) {
+        res.clearCookie('jwt');
+        next(new Err(UNAUTHORIZED));
+      } else {
+        req.user = payload;
+        next();
+      }
+    })
+    .catch(next);
 };
