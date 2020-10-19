@@ -40,7 +40,7 @@ const app = express();
 
 mongoose.connect(mongoUri, mongooseOptions);
 
-app.options('*', cors());
+app.options('*', cors(corsOptions));
 app.use(cors(corsOptions));
 
 app.use(requestLogger);

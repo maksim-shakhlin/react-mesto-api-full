@@ -56,7 +56,7 @@ const whitelist = [
 if (NODE_ENV !== 'production') {
   whitelist.push('http://localhost:3001');
 }
-
+module.exports.whitelist = whitelist;
 module.exports.corsOptions = {
   origin: (origin, callback) => {
     if (whitelist.indexOf(origin) !== -1) {
