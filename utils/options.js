@@ -1,6 +1,5 @@
 require('dotenv').config();
 const { cleaner } = require('./utils');
-const { Err } = require('./errors');
 
 const { JWT_SECRET, NODE_ENV } = process.env;
 
@@ -58,15 +57,3 @@ if (NODE_ENV !== 'production') {
   whitelist.push('http://localhost:3001');
 }
 module.exports.whitelist = whitelist;
-module.exports.corsOptions = {
-  origin: (origin, callback) => {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(
-        new Err({ statusCode: 403, message: `${origin} not in ${whitelist}` }),
-      );
-    }
-  },
-  credentials: true,
-};
