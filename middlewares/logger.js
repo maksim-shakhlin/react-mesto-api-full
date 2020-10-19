@@ -2,7 +2,7 @@ const winston = require('winston');
 const expressWinston = require('express-winston');
 const path = require('path');
 
-const dirPath = path.join(__dirname, 'logs');
+const dirPath = path.join(__dirname, '..', 'logs');
 
 const requestLogger = expressWinston.logger({
   transports: [
