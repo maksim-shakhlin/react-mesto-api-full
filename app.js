@@ -23,6 +23,7 @@ const {
   mongoUri,
   mongooseOptions,
   limiterOptions,
+  corsOptions,
 } = require('./utils/options');
 const {
   signupValidator,
@@ -33,19 +34,12 @@ const {
 
 const limiter = rateLimit(limiterOptions);
 
-const { PORT = 3000, MODIFIER, NODE_ENV } = process.env;
+const { PORT = 3000, MODIFIER } = process.env;
 
 const app = express();
 
 mongoose.connect(mongoUri, mongooseOptions);
-if (NODE_ENV !== 'production') {
-  app.use(
-    cors({
-      origin: 'http://localhost:3001',
-      credentials: true,
-    }),
-  );
-}
+app.use(cors(corsOptions));
 
 app.use(requestLogger);
 app.use(limiter);

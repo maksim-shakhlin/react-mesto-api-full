@@ -47,3 +47,23 @@ module.exports.jwtCookieOptions = {
 module.exports.jwtOptions = {
   expiresIn: '7d',
 };
+
+const whitelist = [
+  'https://maks.students.nomoreparties.xyz',
+  'http://maks.students.nomoreparties.xyz',
+];
+
+if (NODE_ENV !== 'production') {
+  whitelist.push('http://localhost:3001');
+}
+
+module.exports.corsOptions = {
+  origin: (origin, callback) => {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+};
