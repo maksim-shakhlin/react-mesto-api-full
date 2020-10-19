@@ -1,4 +1,5 @@
 require('dotenv').config();
+
 const { cleaner } = require('./utils');
 
 const { JWT_SECRET, NODE_ENV } = process.env;
@@ -51,9 +52,21 @@ module.exports.jwtOptions = {
 const whitelist = [
   'https://maks.students.nomoreparties.xyz',
   'http://maks.students.nomoreparties.xyz',
+  'https://www.maks.students.nomoreparties.xyz',
+  'http://www.maks.students.nomoreparties.xyz',
 ];
 
 if (NODE_ENV !== 'production') {
   whitelist.push('http://localhost:3001');
 }
 module.exports.whitelist = whitelist;
+module.exports.corsOptions = {
+  origin: (origin, callback) => {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  },
+  credentials: true,
+};

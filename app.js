@@ -6,12 +6,12 @@ const cookieParser = require('cookie-parser');
 const { errors: celebrateErrors } = require('celebrate');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const cors = require('cors');
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { login, createUser, logout } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const errors = require('./middlewares/errors');
-const cors = require('./middlewares/cors');
 
 const users = require('./routes/users');
 const cards = require('./routes/cards');
@@ -23,6 +23,7 @@ const {
   mongoUri,
   mongooseOptions,
   limiterOptions,
+  corsOptions,
 } = require('./utils/options');
 const {
   signupValidator,
@@ -39,8 +40,7 @@ const app = express();
 
 mongoose.connect(mongoUri, mongooseOptions);
 
-app.use(cors);
-app.options('*', cors);
+app.use(cors(corsOptions));
 
 app.use(requestLogger);
 app.use(limiter);
