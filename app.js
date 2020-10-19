@@ -39,6 +39,8 @@ const { PORT = 3000, MODIFIER } = process.env;
 const app = express();
 
 mongoose.connect(mongoUri, mongooseOptions);
+
+app.options('*', cors());
 app.use(cors(corsOptions));
 
 app.use(requestLogger);
