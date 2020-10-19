@@ -65,4 +65,5 @@ module.exports.corsOptions = {
       callback(new Error('Not allowed by CORS'));
     }
   },
+  credentials: true,
 };
