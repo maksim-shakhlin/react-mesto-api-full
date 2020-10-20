@@ -1,7 +1,8 @@
 const notFound = require('express').Router();
+const { Err, NOT_FOUND } = require('../utils/errors');
 
-notFound.all('/', (req, res) => {
-  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
+notFound.all('/', () => {
+  throw new Err(NOT_FOUND);
 });
 
 module.exports = notFound;

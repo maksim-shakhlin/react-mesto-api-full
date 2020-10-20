@@ -24,8 +24,14 @@ const NO_SUCH_USER_ID = {
   message: 'Пользователь с таким id не найден',
   statusCode: 404,
 };
+
 const NO_SUCH_CARD_ID = {
   message: 'Карточка с таким id не найдена',
+  statusCode: 404,
+};
+
+const NOT_FOUND = {
+  message: 'Запрашиваемый ресурс не найден',
   statusCode: 404,
 };
 
@@ -42,4 +48,5 @@ module.exports = {
   NO_SUCH_CARD_ID,
   FORBIDDEN,
   USER_EXISTS,
+  NOT_FOUND,
 };

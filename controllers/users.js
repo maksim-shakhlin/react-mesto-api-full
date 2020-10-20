@@ -25,21 +25,19 @@ const getUsers = (req, res) => {
 };
 
 const getUser = (req, res) => {
-  return User.findById(req.user._id).then((user) => {
-    if (!user) {
-      throw new Err(NO_SUCH_USER_ID);
-    }
-    res.send(user);
-  });
+  return User.findById(req.user._id)
+    .orFail(new Err(NO_SUCH_USER_ID))
+    .then((user) => {
+      res.send(user);
+    });
 };
 
 const getUserById = (req, res) => {
-  return User.findById(req.params.id).then((user) => {
-    if (!user) {
-      throw new Err(NO_SUCH_USER_ID);
-    }
-    res.send(user);
-  });
+  return User.findById(req.params.id)
+    .orFail(new Err(NO_SUCH_USER_ID))
+    .then((user) => {
+      res.send(user);
+    });
 };
 
 const createUser = (req, res) => {
@@ -64,12 +62,11 @@ const updateUser = (res, id, data) => {
   return User.findByIdAndUpdate(id, data, {
     new: true,
     runValidators: true,
-  }).then((user) => {
-    if (!user) {
-      throw new Err(NO_SUCH_USER_ID);
-    }
-    res.send(user);
-  });
+  })
+    .orFail(new Err(NO_SUCH_USER_ID))
+    .then((user) => {
+      res.send(user);
+    });
 };
 
 const updateUserInfo = (req, res) => {
@@ -86,11 +83,8 @@ const login = (req, res) => {
   const { email, password } = req.body;
   return User.findOne({ email })
     .select('+password')
+    .orFail(new Err(WRONG_EMAIL_OR_PASSWORD))
     .then((user) => {
-      if (!user) {
-        throw new Err(WRONG_EMAIL_OR_PASSWORD);
-      }
-
       return bcrypt.compare(password, user.password).then((matched) => {
         if (!matched) {
           throw new Err(WRONG_EMAIL_OR_PASSWORD);
@@ -109,12 +103,11 @@ const logout = (req, res) => {
   if (_id !== req.user._id) {
     throw new Err(FORBIDDEN);
   }
-  return User.findById(_id).then((user) => {
-    if (!user) {
-      throw new Err(NO_SUCH_USER_ID);
-    }
-    res.clearCookie('jwt').send({ message: 'Вы успешно вышли' });
-  });
+  return User.findById(_id)
+    .orFail(new Err(NO_SUCH_USER_ID))
+    .then(() => {
+      res.clearCookie('jwt').send({ message: 'Вы успешно вышли' });
+    });
 };
 
 module.exports = enableErrorHandling({

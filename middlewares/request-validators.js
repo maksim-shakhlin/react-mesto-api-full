@@ -20,6 +20,9 @@ const isPasswordJoi = decorateForJoi(
   'Можно латинские буквы, цифры и любые спецсимволы',
 );
 
+const _id = Joi.string().length(24).hex();
+const str = Joi.string().required().min(2).max(30);
+
 const avatar = {
   body: Joi.object().keys({
     avatar: Joi.string().required().custom(isUrlJoi),
@@ -28,20 +31,20 @@ const avatar = {
 
 const info = {
   body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30).custom(isNameJoi),
-    about: Joi.string().required().min(2).max(30),
+    name: str.custom(isNameJoi),
+    about: str,
   }),
 };
 
 const id = {
   params: Joi.object().keys({
-    id: Joi.string().alphanum().length(24),
+    id: _id,
   }),
 };
 
 const card = {
   body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
+    name: str,
     link: Joi.string().required().custom(isUrlJoi),
   }),
 };
@@ -55,7 +58,7 @@ const signup = {
 
 const logout = {
   body: Joi.object().keys({
-    _id: Joi.string().alphanum().length(24),
+    _id,
   }),
 };
 

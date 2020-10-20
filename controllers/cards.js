@@ -9,17 +9,14 @@ const getCards = (req, res) => {
 
 const deleteCard = (req, res) => {
   return Card.findById(req.params.id)
+    .orFail(new Err(NO_SUCH_CARD_ID))
     .then((card) => {
-      if (!card) {
-        throw new Err(NO_SUCH_CARD_ID);
-      }
-
       if (card.owner.toString() !== req.user._id) {
         throw new Err(FORBIDDEN);
       }
       return Card.findByIdAndDelete(req.params.id);
     })
-    .then(() => res.status(204).end());
+    .then(() => res.send({ message: 'Карточка успешно удалена' }));
 };
 
 const createCard = (req, res) => {
@@ -34,12 +31,11 @@ const likeCard = (req, res) => {
     req.params.id,
     { $addToSet: { likes: req.user._id } },
     { new: true },
-  ).then((card) => {
-    if (!card) {
-      throw new Err(NO_SUCH_CARD_ID);
-    }
-    res.send(card);
-  });
+  )
+    .orFail(new Err(NO_SUCH_CARD_ID))
+    .then((card) => {
+      res.send(card);
+    });
 };
 
 const dislikeCard = (req, res) => {
@@ -47,12 +43,11 @@ const dislikeCard = (req, res) => {
     req.params.id,
     { $pull: { likes: req.user._id } },
     { new: true },
-  ).then((card) => {
-    if (!card) {
-      throw new Err(NO_SUCH_CARD_ID);
-    }
-    res.send(card);
-  });
+  )
+    .orFail(new Err(NO_SUCH_CARD_ID))
+    .then((card) => {
+      res.send(card);
+    });
 };
 
 module.exports = enableErrorHandling({
