@@ -4,7 +4,9 @@ const Card = require('../models/card');
 const { cleanCreated } = require('../utils/utils');
 
 const getCards = (req, res) => {
-  return Card.find({}).then((cards) => res.send(cards));
+  return Card.find({})
+    .sort('-createdAt')
+    .then((cards) => res.send(cards));
 };
 
 const deleteCard = (req, res) => {
