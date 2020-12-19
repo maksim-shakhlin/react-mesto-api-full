@@ -50,10 +50,10 @@ module.exports.jwtOptions = {
 };
 
 const whitelist = [
-  'https://maks.students.nomoreparties.xyz',
-  'http://maks.students.nomoreparties.xyz',
-  'https://www.maks.students.nomoreparties.xyz',
-  'http://www.maks.students.nomoreparties.xyz',
+  'https://mesto.deque.ru',
+  'http://mesto.deque.ru',
+  'https://www.mesto.deque.ru',
+  'http://www.mesto.deque.ru',
 ];
 
 if (NODE_ENV !== 'production') {

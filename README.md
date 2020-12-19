@@ -8,6 +8,5 @@ API проекта Mesto, включающий авторизацию и рег�
 Репозиторий с готовым React-приложением: [react-mesto-auth](https://github.com/maksim-shakhlin/react-mesto-auth/)
 
 ## Деплой
-Сайт на Яндекс.Облаке: [maks.students.nomoreparties.xyz](https://maks.students.nomoreparties.xyz/)<br/>
-IP: [84.201.154.112](http://84.201.154.112/ )<br/>
-API:  [api.maks.students.nomoreparties.xyz](https://api.maks.students.nomoreparties.xyz/)<br/>
+[mesto.deque.ru](https://mesto.deque.ru/)<br/>
+API:  [api.mesto.deque.ru](https://api.mesto.deque.ru/)<br/>

@@ -4,7 +4,7 @@ function isUrl(string) {
 }
 
 function isPassword(string) {
-  const regExp = /^[\w!@#$%^&*()\-_+=;:,./?\\|`~[\]{}<>"']*$/i;
+  const regExp = /^[\w!@#$%^&*()\-+=;:,./?\\|`~[\]{}<>"']*$/i;
   return regExp.test(string);
 }
 
